@@ -6,10 +6,12 @@ Uses the Brother Print SDK for Android and iOS ...
 
 More info can be found here, including a list of compatible printers: 
 https://support.brother.com/g/s/es/dev/en/mobilesdk/download/index.html?c=us_ot&lang=en&comple=on&redirect=on
+https://www.brother.co.jp/eng/dev/mobilesdk
 
 Already bundled is the following version:
- - Brother Print SDK for Android™ v3.5.1 (2020-07-16) which is in the `src/android/libs` dir.
- - Brother Print SDK for iPhone/iPad v4.0.2 (2020-09-08)
+ v3.0.14 (05/09/2019) which is in the `src/android/libs` dir.
+  
+By downloading this you agree to the Brother SDK License terms which are included in the README under the libs dir.
 
 ## Installing
 
@@ -46,7 +48,7 @@ MPrint MW-145MFi, MW-260MFi
 MPrint MW-140BT, MW-145BT, MW-260
 RJ-4030Ai, RJ-4030, RJ-4040
 TD-2020, TD-2120N, TD-2130N, TD-4000, TD-4100N
-QL-710W, QL-720NW, QL-810W, QL-820NWB, QL-1110NWB, QL-1115NWB,
+QL-710W, QL-720NW
 PT-E550W, PT-P750W
 RJ-3050, RJ-3150
 PT-E800W, PT-D800W, PT-E850TKW
