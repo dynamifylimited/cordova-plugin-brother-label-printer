@@ -567,7 +567,7 @@ public class BrotherPrinter extends CordovaPlugin {
 //        String customSettingsPath = "file:///android_asset/www/assets/printer-config/pdt3535.bin";
 //        String customSettingsPath = "/sdcard/Download/bst200ct.bin";
         // String customSettingsPath = "/sdcard/Download/TD2120_57mm.bin";
-        String customSettingsPath = "/sdcard/Android/data/com.dynamify.merchantv2/files/printer-info/TD2120_57mm.bin";
+        String customSettingsPath = "/sdcard/Android/data/com.dynamify.merchantv2/files/TD2120_57mm.bin";
 //        String customSettingsPath = "/sdcard/Download/bst200ct.bin";
 //        String customSettingsPath = "/Internal storage/Download/pdt3535.bin";
 //        String customSettingsPath = "/sdcard/Internal storage/Download/pdt3535.bin";
