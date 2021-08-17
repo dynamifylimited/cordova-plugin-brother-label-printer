@@ -435,7 +435,7 @@ public class BrotherPrinter extends CordovaPlugin {
         mBitmapPrint.print();
     }
 
-    private void sendUSBConfig(final JSONArray args, final CallbackContext callbackctx){
+    private void sendUSBConfig(final JSONArray args, final CallbackContext callbackctx) {
 
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
@@ -454,7 +454,7 @@ public class BrotherPrinter extends CordovaPlugin {
                     return;
                 }
 
-                final String ACTION_USB_PERMISSION = "com.threescreens.cordova.plugin.brotherPrinter.USB_PERMISSION";
+                final String ACTION_USB_PERMISSION = "com.threescreens.cordova.plugin.brotherprinter.USB_PERMISSION";
 
                 PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
                 usbManager.requestPermission(usbDevice, permissionIntent);
@@ -467,13 +467,12 @@ public class BrotherPrinter extends CordovaPlugin {
                             synchronized (this) {
                                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
                                     Log.d(TAG, "USB permission granted");
-                                else {
+                                else
                                     Log.d(TAG, "USB permission rejected");
-                                    PluginResult result;
-                                    result = new PluginResult(PluginResult.Status.ERROR, "USB permission rejected");
-                                    callbackctx.sendPluginResult(result);
-                                    return;
-                                }
+                                PluginResult result;
+                                result = new PluginResult(PluginResult.Status.ERROR, "USB permission rejected");
+                                callbackctx.sendPluginResult(result);
+                                return;
                             }
                         }
                     }
@@ -495,21 +494,32 @@ public class BrotherPrinter extends CordovaPlugin {
                     }
                 }
 
-                try {
-                    setTdPrinterInfo(myPrinter, context);
-                } catch (FileNotFoundException e) {
-                    Log.d(TAG, e.getMessage());
-                    PluginResult result;
-                    result = new PluginResult(PluginResult.Status.ERROR, e.getMessage());
-                    callbackctx.sendPluginResult(result);
-                    return;
-                }
+                PrinterInfo myPrinterInfo = new PrinterInfo();
 
-                String td_status_code = "";
-                String ql_status_code = "";
+                myPrinterInfo = myPrinter.getPrinterInfo();
+
+                myPrinterInfo.printerModel = PrinterInfo.Model.QL_810W;
+                myPrinterInfo.port = PrinterInfo.Port.USB;
+                myPrinterInfo.paperSize = PrinterInfo.PaperSize.CUSTOM;
+                myPrinterInfo.labelNameIndex = 17;
+
+                myPrinter.setPrinterInfo(myPrinterInfo);
+
+//                 LabelInfo myLabelInfo = new LabelInfo();
+
+//                 myLabelInfo.labelNameIndex = myPrinter.checkLabelInPrinter();
+//                 myLabelInfo.isAutoCut = true;
+//                 myLabelInfo.isEndCut = true;
+//                 myLabelInfo.isHalfCut = false;
+//                 myLabelInfo.isSpecialTape = false;
+
+                 // label info must be set after setPrinterInfo, it's not in the docs
+//                 myPrinter.setLabelInfo(myLabelInfo);
+
+                String status_code = "";
                 String data = args.optString(0, null);
                 try {
-                    td_status_code = printWithUsb(myPrinter, context, data);
+                    status_code = printWithUsb(myPrinter, context, data);
                 } catch (IOException e) {
                     Log.d(TAG, "Temp file action failed: " + e.toString());
                     PluginResult result;
@@ -517,28 +527,10 @@ public class BrotherPrinter extends CordovaPlugin {
                     callbackctx.sendPluginResult(result);
                     return;
                 }
-                if (td_status_code.contains("ERROR")) {
-                    setQlPrinterInfo(myPrinter);
-                    try {
-                        ql_status_code = printWithUsb(myPrinter, context, data);
-                    } catch (IOException e) {
-                        Log.d(TAG, "Temp file action failed: " + e.toString());
-                        PluginResult result;
-                        result = new PluginResult(PluginResult.Status.ERROR, "Temp file action failed:" + e.toString());
-                        callbackctx.sendPluginResult(result);
-                        return;
-                    }
-                }
 
-                PluginResult.Status status = td_status_code == "ERROR_NONE" || ql_status_code == "ERROR_NONE" ? PluginResult.Status.OK : PluginResult.Status.ERROR;
+                PluginResult.Status status = status_code == "ERROR_NONE" ? PluginResult.Status.OK : PluginResult.Status.ERROR;
 
-                PluginResult result;
-                result = new PluginResult(
-                        status,
-                        "TD: " +
-                                td_status_code +
-                                ", QL: " +
-                                ql_status_code);
+                PluginResult result = new PluginResult(status, status_code);
                 callbackctx.sendPluginResult(result);
             }
         });
@@ -547,14 +539,11 @@ public class BrotherPrinter extends CordovaPlugin {
     private String printWithUsb(Printer myPrinter, Context context, String data) throws IOException {
         File outputDir = context.getCacheDir();
         File outputFile = new File(outputDir.getPath() + "configure.prn");
-//        File outputFile = new File("/sdcard/Android/data/com.dynamify.merchantv2/files/" + "configure.prn");
-//        outputFile.createNewFile();
 
         FileWriter writer = new FileWriter(outputFile);
         writer.write(data);
         writer.close();
         PrinterStatus status = myPrinter.printFile(outputFile.toString());
-//        PrinterStatus status = myPrinter.printPdfFile("/sdcard/Android/data/com.dynamify.merchantv2/files/printer-info/exampleprint-converted.pdf", 0);
         outputFile.delete();
 
         String status_code = ""+status.errorCode;
@@ -562,151 +551,5 @@ public class BrotherPrinter extends CordovaPlugin {
         Log.d(TAG, "PrinterStatus: "+status_code);
 
         return status_code;
-    }
-
-    private void setTdPrinterInfo(Printer myPrinter, Context context) throws FileNotFoundException {
-//        String customSettingsPath = "file:///android_asset/www/assets/printer-config/pdt3535.bin";
-//        String customSettingsPath = "/sdcard/Download/bst200ct.bin";
-        // String customSettingsPath = "/sdcard/Download/TD2120_57mm.bin";
-        String customSettingsPath = "/sdcard/Android/data/com.dynamify.merchantv2/files/TD2120_57mm.bin";
-//        String customSettingsPath = "/sdcard/Download/bst200ct.bin";
-//        String customSettingsPath = "/Internal storage/Download/pdt3535.bin";
-//        String customSettingsPath = "/sdcard/Internal storage/Download/pdt3535.bin";
-        File file = new File(customSettingsPath);
-        if(!file.exists()) {
-            String message = "Could not find " + customSettingsPath;
-//            File subFile = new File("file:///android_asset/www/assets/printer-config");
-//            if (!subFile.exists()) {
-//                subFile = new File("file:///android_asset/www/assets");
-//                if (!subFile.exists()) {
-//                    subFile = new File("file:///android_asset/www");
-//                    if (!subFile.exists()) {
-//                        subFile = new File("file:///android_asset");
-//                        if (!subFile.exists()) {
-//                            message += "\nfile:///android_asset not found";
-//                            throw new FileNotFoundException(message);
-//                        }
-//                    }
-//                }
-//            }
-//            File subFile = new File("/sdcard");
-//            if (subFile.exists()) {
-//                message += "\n" + subFile.getName() +":";
-//                for (String path : subFile.list()) {
-//                    message += "\n" + path;
-//                }
-//            } else {
-//                message += "\n" + subFile.getName() +"!";
-//
-//            }
-//            File subFile = new File("/Internal storage/Download");
-//            if (!subFile.exists()) {
-//                subFile = new File("/Internal storage");
-//                if (!subFile.exists()) {
-//                    message += "\n/Internal storage not found";
-//                    throw new FileNotFoundException(message);
-//                }
-//            }
-//            message += "\n" + subFile.getName() +":";
-//            for (String path : subFile.list()) {
-//                message += "\n" + path;
-//            }
-            throw new FileNotFoundException(message);
-        }
-
-        PrinterInfo myPrinterInfo = new PrinterInfo();
-
-        myPrinterInfo = myPrinter.getPrinterInfo();
-
-        myPrinterInfo.printerModel  = PrinterInfo.Model.TD_2120N;
-        myPrinterInfo.port          = PrinterInfo.Port.USB;
-        myPrinterInfo.paperSize = PrinterInfo.PaperSize.CUSTOM;
-        myPrinterInfo.rotate180 = false;
-        myPrinterInfo.peelMode = false;
-//        myPrinterInfo.labelNameIndex = 17;
-        myPrinterInfo.customPaper = customSettingsPath;
-
-        // This method receives an internal error. Documentations mentions it's supported by TD-4 series but doesn't mention TD-2
-//        float width = 57.2f;
-//        float rightMargin = 1.5f;
-//        float leftMargin = 1.5f;
-//        float topMargin = 3.0f;
-//        float length = 60f;
-//        float bottomMargin = 3f;
-//        float labelPitch = 1f;
-//        float markPosition = 1f;
-//        float markHeight = 1f;
-//        CustomPaperInfo customPaperInfo = CustomPaperInfo.newCustomRollPaper(myPrinterInfo.printerModel,
-//                Unit.Mm,
-//                width,
-//                rightMargin,
-//                leftMargin,
-//                topMargin);
-//        CustomPaperInfo customPaperInfo = CustomPaperInfo.newCustomMarkRollPaper(myPrinterInfo.printerModel,
-//                Unit.Mm,
-//                width,
-//                length,
-//                rightMargin,
-//                leftMargin,
-//                topMargin,
-//                bottomMargin,
-//                markPosition,
-//                markHeight);
-//        CustomPaperInfo customPaperInfo = CustomPaperInfo.newCustomDiaCutPaper(myPrinterInfo.printerModel,
-//                Unit.Mm,
-//                width,
-//                length,
-//                rightMargin,
-//                leftMargin,
-//                topMargin,
-//                bottomMargin,
-//                labelPitch);
-//        List<Map<CustomPaperInfo.ErrorParameter, CustomPaperInfo.ErrorDetail>> errors = myPrinterInfo.setCustomPaperInfo(customPaperInfo);
-//        if (errors.isEmpty() == false) {
-//            StringBuilder message = new StringBuilder("custom paper errors: ");
-//            errors.forEach((error) -> {
-//                message.append(error.keySet().stream()
-//                        .map(key -> key + ": " + error.get(key))
-//                        .collect(Collectors.joining(", ", "{", "} ")));
-//            });
-//            throw new FileNotFoundException(message.toString());
-//        }
-
-        myPrinter.setPrinterInfo(myPrinterInfo);
-
-//        LabelInfo myLabelInfo = new LabelInfo();
-//
-//        myLabelInfo.labelNameIndex  = myPrinter.checkLabelInPrinter();
-//        myLabelInfo.isAutoCut       = true;
-//        myLabelInfo.isEndCut        = true;
-//        myLabelInfo.isHalfCut       = false;
-//        myLabelInfo.isSpecialTape   = false;
-//
-//        //label info must be set after setPrinterInfo, it's not in the docs
-//        myPrinter.setLabelInfo(myLabelInfo);
-    }
-
-    private void setQlPrinterInfo(Printer myPrinter) {
-        PrinterInfo myPrinterInfo = new PrinterInfo();
-
-        myPrinterInfo = myPrinter.getPrinterInfo();
-
-        myPrinterInfo.printerModel  = PrinterInfo.Model.QL_820NWB;
-        myPrinterInfo.port          = PrinterInfo.Port.USB;
-        myPrinterInfo.paperSize     = PrinterInfo.PaperSize.CUSTOM;
-        myPrinterInfo.labelNameIndex = 17;
-
-        myPrinter.setPrinterInfo(myPrinterInfo);
-
-//        LabelInfo myLabelInfo = new LabelInfo();
-//
-//        myLabelInfo.labelNameIndex  = labelIndex;
-//        myLabelInfo.isAutoCut       = true;
-//        myLabelInfo.isEndCut        = true;
-//        myLabelInfo.isHalfCut       = false;
-//        myLabelInfo.isSpecialTape   = false;
-
-        //label info must be set after setPrinterInfo, it's not in the docs
-//        myPrinter.setLabelInfo(myLabelInfo);
     }
 }
