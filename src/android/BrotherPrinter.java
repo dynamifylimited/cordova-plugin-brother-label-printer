@@ -454,7 +454,7 @@ public class BrotherPrinter extends CordovaPlugin {
                     return;
                 }
 
-                final String ACTION_USB_PERMISSION = "com.threescreens.cordova.plugin.brotherprinter.USB_PERMISSION";
+                final String ACTION_USB_PERMISSION = "com.threescreens.cordova.plugin.brotherPrinter.USB_PERMISSION";
 
                 PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
                 usbManager.requestPermission(usbDevice, permissionIntent);
@@ -467,12 +467,13 @@ public class BrotherPrinter extends CordovaPlugin {
                             synchronized (this) {
                                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
                                     Log.d(TAG, "USB permission granted");
-                                else
+                                else {
                                     Log.d(TAG, "USB permission rejected");
-                                PluginResult result;
-                                result = new PluginResult(PluginResult.Status.ERROR, "USB permission rejected");
-                                callbackctx.sendPluginResult(result);
-                                return;
+                                    PluginResult result;
+                                    result = new PluginResult(PluginResult.Status.ERROR, "USB permission rejected");
+                                    callbackctx.sendPluginResult(result);
+                                    return;
+                                }
                             }
                         }
                     }
