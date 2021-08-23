@@ -499,7 +499,6 @@ public class BrotherPrinter extends CordovaPlugin {
 
                 myPrinterInfo = myPrinter.getPrinterInfo();
 
-                myPrinterInfo.printerModel = PrinterInfo.Model.QL_810W;
                 myPrinterInfo.port = PrinterInfo.Port.USB;
                 myPrinterInfo.paperSize = PrinterInfo.PaperSize.CUSTOM;
                 myPrinterInfo.labelNameIndex = 17;
@@ -517,27 +516,42 @@ public class BrotherPrinter extends CordovaPlugin {
                  // label info must be set after setPrinterInfo, it's not in the docs
 //                 myPrinter.setLabelInfo(myLabelInfo);
 
-                String status_code = "";
+                PrinterStatus printerStatus = null;
                 String data = args.optString(0, null);
-                try {
-                    status_code = printWithUsb(myPrinter, context, data);
-                } catch (IOException e) {
-                    Log.d(TAG, "Temp file action failed: " + e.toString());
-                    PluginResult result;
-                    result = new PluginResult(PluginResult.Status.ERROR, "Temp file action failed:" + e.toString());
-                    callbackctx.sendPluginResult(result);
-                    return;
+                for (PrinterInfo.Model model : PrinterInfo.Model.values()) {
+                    Log.d(TAG, "Attempting model " + model.toString());
+                    // Try each model. If it fails for a reason other than selecting the wrong model, stop trying
+                    myPrinterInfo.printerModel = model;
+                    myPrinter.setPrinterInfo(myPrinterInfo);
+                    Log.d(TAG, "printer model " + myPrinter.getPrinterInfo().printerModel.toString());
+                    try {
+                        printerStatus = printWithUsb(myPrinter, context, data);
+                        Log.d(TAG, "printer status " + printerStatus.errorCode.toString());
+                        if (printerStatus.errorCode != PrinterInfo.ErrorCode.ERROR_NOT_SAME_MODEL) {
+                            break;
+                        }
+                    } catch (IOException e) {
+                        Log.d(TAG, "Temp file action failed: " + e.toString());
+                        PluginResult result;
+                        result = new PluginResult(PluginResult.Status.ERROR, "Temp file action failed:" + e.toString());
+                        callbackctx.sendPluginResult(result);
+                        return;
+                    }
                 }
 
-                PluginResult.Status status = status_code == "ERROR_NONE" ? PluginResult.Status.OK : PluginResult.Status.ERROR;
+                PluginResult.Status status = PluginResult.Status.ERROR;
+                if (printerStatus != null) {
+                    status = printerStatus.errorCode == PrinterInfo.ErrorCode.ERROR_NONE ?
+                            PluginResult.Status.OK : PluginResult.Status.ERROR;
+                }
 
-                PluginResult result = new PluginResult(status, status_code);
+                PluginResult result = new PluginResult(status, printerStatus.errorCode.toString());
                 callbackctx.sendPluginResult(result);
             }
         });
     }
 
-    private String printWithUsb(Printer myPrinter, Context context, String data) throws IOException {
+    private PrinterStatus printWithUsb(Printer myPrinter, Context context, String data) throws IOException {
         File outputDir = context.getCacheDir();
         File outputFile = new File(outputDir.getPath() + "configure.prn");
 
@@ -551,6 +565,6 @@ public class BrotherPrinter extends CordovaPlugin {
 
         Log.d(TAG, "PrinterStatus: "+status_code);
 
-        return status_code;
+        return status;
     }
 }
