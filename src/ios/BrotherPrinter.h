@@ -1,8 +1,8 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 #import <Cordova/CDVPlugin.h>
 #import "BRUserDefaults.h"
-#import <BRPtouchPrinterKit/BRPtouchNetworkManager.h>
-#import <BRPtouchPrinterKit/BRPtouchPrinterKit.h>
+#import <BRLMPrinterKit/BRPtouchNetworkManager.h>
+#import <BRLMPrinterKit/BRPtouchPrinterKit.h>
 #import "BRBluetoothPrintOperation.h"
 #import "BRWLANPrintOperation.h"
 #define kPaperLabelName		@"paperLabelName"

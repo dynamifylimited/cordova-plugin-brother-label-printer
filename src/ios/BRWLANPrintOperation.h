@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <BRPtouchPrinterKit/BRPtouchPrinterKit.h>
+#import <BRLMPrinterKit/BRPtouchPrinterKit.h>
 
 @interface BRWLANPrintOperation : NSOperation {
 }
