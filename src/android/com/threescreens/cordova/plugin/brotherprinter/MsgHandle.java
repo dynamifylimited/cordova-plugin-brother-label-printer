@@ -5,7 +5,7 @@
  * @version 2.2
  */
 
-package com.brother.ptouch.sdk.printdemo.common;
+package com.threescreens.cordova.plugin.brotherprinter;
 
 import android.os.Handler;
 import android.os.Message;

@@ -1,14 +1,9 @@
 package com.threescreens.cordova.plugin.brotherprinter;
 
-import java.lang.reflect.Array;
 //import java.util.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 //import java.io.*;
 import java.io.File;
@@ -16,7 +11,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -42,8 +36,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.telecom.Call;
 import android.util.Base64;
 import android.util.Log;
 
@@ -57,9 +49,7 @@ import com.brother.ptouch.sdk.NetPrinter;
 import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.brother.ptouch.sdk.PrinterStatus;
-import com.brother.ptouch.sdk.printdemo.common.MsgHandle;
-import com.brother.ptouch.sdk.printdemo.printprocess.ImageBitmapPrint;
-import com.brother.ptouch.sdk.printdemo.printprocess.ImageFilePrint;
+
 import static com.threescreens.cordova.plugin.brotherprinter.PrinterInputParameterConstant.INCLUDE_BATTERY_STATUS;
 
 public class BrotherPrinter extends CordovaPlugin {
@@ -494,7 +484,6 @@ public class BrotherPrinter extends CordovaPlugin {
                 UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
                 UsbDevice usbDevice = myPrinter.getUsbDevice(usbManager);
                 if (usbDevice == null) {
-                    Log.d(TAG, "USB device not found");
                     PluginResult result;
                     result = new PluginResult(PluginResult.Status.ERROR, "USB device not found");
                     callbackctx.sendPluginResult(result);
@@ -543,7 +532,6 @@ public class BrotherPrinter extends CordovaPlugin {
                 }
 
                 PrinterInfo myPrinterInfo = new PrinterInfo();
-
                 myPrinterInfo = myPrinter.getPrinterInfo();
 
                 myPrinterInfo.port = PrinterInfo.Port.USB;
@@ -555,19 +543,16 @@ public class BrotherPrinter extends CordovaPlugin {
                 PrinterStatus printerStatus = null;
                 String data = args.optString(0, null);
                 for (PrinterInfo.Model model : PrinterInfo.Model.values()) {
-                    Log.d(TAG, "Attempting model " + model.toString());
                     // Try each model. If it fails for a reason other than selecting the wrong model, stop trying
                     myPrinterInfo.printerModel = model;
                     myPrinter.setPrinterInfo(myPrinterInfo);
-                    Log.d(TAG, "printer model " + myPrinter.getPrinterInfo().printerModel.toString());
                     try {
                         printerStatus = printWithUsb(myPrinter, context, data);
-                        Log.d(TAG, "printer status " + printerStatus.errorCode.toString());
                         if (printerStatus.errorCode != PrinterInfo.ErrorCode.ERROR_NOT_SAME_MODEL) {
                             break;
                         }
                     } catch (IOException e) {
-                        Log.d(TAG, "Temp file action failed: " + e.toString());
+                        Log.e(TAG, "Temp file action failed: " + e.toString());
                         PluginResult result;
                         result = new PluginResult(PluginResult.Status.ERROR, "Temp file action failed:" + e.toString());
                         callbackctx.sendPluginResult(result);

@@ -5,7 +5,7 @@
  * @version 2.2
  */
 
-package com.brother.ptouch.sdk.printdemo.printprocess;
+package com.threescreens.cordova.plugin.brotherprinter;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -27,11 +27,6 @@ import com.brother.ptouch.sdk.PrinterInfo.ErrorCode;
 import com.brother.ptouch.sdk.PrinterInfo.Model;
 import com.brother.ptouch.sdk.PrinterStatus;
 import com.brother.ptouch.sdk.Unit;
-import com.brother.ptouch.sdk.printdemo.common.Common;
-import com.brother.ptouch.sdk.printdemo.common.MsgHandle;
-
-import java.util.List;
-import java.util.Map;
 
 import static com.threescreens.cordova.plugin.brotherprinter.BrotherPrinter.TAG;
 import static com.threescreens.cordova.plugin.brotherprinter.PrinterInputParameterConstant.INCLUDE_BATTERY_STATUS;

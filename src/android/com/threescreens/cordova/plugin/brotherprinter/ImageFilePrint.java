@@ -4,14 +4,11 @@
  * @author Brother Industries, Ltd.
  * @version 2.2
  */
-package com.brother.ptouch.sdk.printdemo.printprocess;
+package com.threescreens.cordova.plugin.brotherprinter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import com.brother.ptouch.sdk.PrinterInfo.ErrorCode;
-import com.brother.ptouch.sdk.printdemo.common.MsgHandle;
 
 import java.util.ArrayList;
 
