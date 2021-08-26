@@ -32,25 +32,19 @@
             </feature>
         </config-file>
 
-        <source-file src="src/android/BrotherPrinter.java" target-dir="src/com/threescreens/cordova/plugin/brotherprinter" />
-        <source-file src="src/android/PrinterInputParameterConstant.java" target-dir="src/com/threescreens/cordova/plugin/brotherprinter" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/BrotherPrinter.java" target-dir="src/com/threescreens/cordova/plugin/brotherprinter" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/PrinterInputParameterConstant.java" target-dir="src/com/threescreens/cordova/plugin/brotherprinter" />
 
 
-        <source-file src="src/android/Common.java" target-dir="src/com/brother/ptouch/sdk/printdemo/common" />
-        <source-file src="src/android/MsgHandle.java" target-dir="src/com/brother/ptouch/sdk/printdemo/common" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/Common.java" target-dir="src/com/brother/ptouch/sdk/printdemo/common" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/MsgHandle.java" target-dir="src/com/brother/ptouch/sdk/printdemo/common" />
 
-        <source-file src="src/android/BasePrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
-        <source-file src="src/android/ImageBitmapPrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
-        <source-file src="src/android/ImageFilePrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/BasePrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/ImageBitmapPrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
+        <source-file src="src/android/com/threescreens/cordova/plugin/brotherprinter/ImageFilePrint.java" target-dir="src/com/brother/ptouch/sdk/printdemo/printprocess" />
 
-        <source-file src="src/android/libs/BrotherPrintLibrary.jar" target-dir="libs" />
-
-        <source-file src="src/android/libs/arm64-v8a" target-dir="jniLibs" />
-        <source-file src="src/android/libs/armeabi" target-dir="jniLibs" />
-        <source-file src="src/android/libs/armeabi-v7a" target-dir="jniLibs" />
-        <source-file src="src/android/libs/x86" target-dir="jniLibs" />
-        <source-file src="src/android/libs/x86_64" target-dir="jniLibs" />
-
+        <framework src="src/android/brotherprinter.gradle" custom="true" type="gradleReference"/>
+        <lib-file src="src/android/BrotherPrintLibrary.aar" />
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>

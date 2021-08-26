@@ -13,7 +13,7 @@ BrotherPrinter.prototype = {
     },
 
     setPrinter: function (printer, onSuccess, onError) {
-         if (cordova.platformId == 'ios' && printer['paperLabelName'] && printer['paperLabelName'].startsWith('W')) {
+        if (cordova.platformId == 'ios' && printer['paperLabelName'] && printer['paperLabelName'].startsWith('W')) {
             var iosLabelName = IOS_PAPER_LABEL_MAP[printer['paperLabelName']];
             if (iosLabelName) {
                 //console.log('Converting paperLabelName to ' + iosLabelName + ' for ios ');
