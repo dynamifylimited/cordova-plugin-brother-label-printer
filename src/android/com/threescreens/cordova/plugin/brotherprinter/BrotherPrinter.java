@@ -538,8 +538,6 @@ public class BrotherPrinter extends CordovaPlugin {
                 myPrinterInfo.paperSize = PrinterInfo.PaperSize.CUSTOM;
                 myPrinterInfo.labelNameIndex = 17;
 
-                myPrinter.setPrinterInfo(myPrinterInfo);
-
                 PrinterStatus printerStatus = null;
                 String data = args.optString(0, null);
                 for (PrinterInfo.Model model : PrinterInfo.Model.values()) {
